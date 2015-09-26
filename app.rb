@@ -14,13 +14,13 @@ def import(s)
 end
 
 import 'channel_registry'
+import 'websocket_handler'
 
 $channel_registry = ChannelRegistry.new
 
 App = lambda do |env|
   if Faye::WebSocket.websocket?(env)
-    channel = $channel_registry.issue(Faye::WebSocket.new(env))
-    channel.run
+    WebsocketHandler.new(Faye::WebSocket.new(env), $channel_registry).run
   else
     # Normal HTTP request
     load 'rest_api.rb'

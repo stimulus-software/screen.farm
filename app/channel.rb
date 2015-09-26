@@ -1,52 +1,28 @@
 class Channel
-  attr_reader :id, :ws
+  attr_reader :id, :listeners
 
-  def initialize(id, ws)
+  def initialize(id)
     @id = id
-    @ws = ws or raise "ws missing"
+    @listeners = []
   end
 
-  def run
-    ws.on :open do |event|
-      with_rescue do
-        send_message command: 'init', channel: id
-      end
-    end
+  def subscribe(listener)
+    @listeners << listener
+  end
 
-    ws.on :message do |event|
-      with_rescue do
-        #ws.send("Echo #{event.data}")
-      end
-    end
-
-    ws.on :close do |event|
-      with_rescue do
-        p [:close, event.code, event.reason]
-        @ws = nil
-      end
-    end
-
-    # Return async Rack response
-    ws.rack_response
+  def unsubscribe(listener)
+    @listeners.delete(listener)
   end
 
   def active?
-    !! ws
+    @listeners.any?
   end
-
 
   def send_message(hash)
-    s = JSON.generate(hash)
-    ws.send(s)
+    @listeners.each do |listener|
+      listener.send_message(hash)
+    end
   end
-
-  def with_rescue
-    yield
-  rescue => e
-    puts "ERROR: #{e.class}: #{e.message}"
-    puts e.backtrace
-  end
-
 
   def show(params)
     send_message({ command: 'show' }.merge params)

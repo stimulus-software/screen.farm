@@ -1,6 +1,10 @@
 var socket = new WebSocket("ws://" + window.location.host + "/");
 socket.onopen = function (event) {
-  console.log("Sending");
+  channel = localStorage.getItem('channel');
+  socket.send(JSON.stringify({
+    command: 'init',
+    channel: channel
+  }));
 }
 
 var displayWindow = null;
@@ -10,9 +14,15 @@ socket.onmessage = function (event) {
   message = JSON.parse(event.data);
   console.log("message:", message);
   if (message.command == 'init') {
-    $('#info').text("Channel " + message.channel);
+    channel = message.channel;
+    localStorage.setItem('channel', channel);
+    $('#info').text(message.channel);
   }
   else if (message.command == 'show') {
-    displayWindow = window.open(message.url, 'display');
+    displayWindow = window.open('', 'display');
+    displayWindow.close();
+    setTimeout(function () {
+      displayWindow = window.open(message.url, 'display');
+    }, 1);
   }
 }

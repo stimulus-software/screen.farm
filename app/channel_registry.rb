@@ -19,13 +19,12 @@ class ChannelRegistry
     }.join('-')
   end
 
-  def issue(ws)
-    id = generate_id
-    @collection[id] = Channel.new(id, ws)
+  def issue
+    self[generate_id]
   end
 
   def [](id)
-    @collection[id]
+    @collection[id] ||= Channel.new(id)
   end
 
   def all
