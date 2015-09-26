@@ -1,17 +1,23 @@
-require 'channel'
+import 'channel'
 
 class ChannelRegistry
   def initialize
     @counter = 0
+    @collection = {}
   end
 
-  def get_next
+  def next_id
     @counter += 1
-    @counter
+    @counter.to_s
   end
 
-  def issue
-    Channel.new(get_next)
+  def issue(ws)
+    id = next_id
+    @collection[id] = Channel.new(id, ws)
+  end
+
+  def [](id)
+    @collection[id]
   end
 end
 
