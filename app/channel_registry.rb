@@ -19,5 +19,13 @@ class ChannelRegistry
   def [](id)
     @collection[id]
   end
+
+  def all
+    @collection.values
+  end
+
+  def all_active
+    all.select(&:active?)
+  end
 end
 

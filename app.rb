@@ -14,7 +14,6 @@ def import(s)
 end
 
 import 'channel_registry'
-import 'channel_server'
 
 $channel_registry = ChannelRegistry.new
 

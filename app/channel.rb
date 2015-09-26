@@ -15,7 +15,7 @@ class Channel
 
     ws.on :message do |event|
       with_rescue do
-        ws.send("Echo #{event.data}")
+        #ws.send("Echo #{event.data}")
       end
     end
 
@@ -29,6 +29,11 @@ class Channel
     # Return async Rack response
     ws.rack_response
   end
+
+  def active?
+    !! ws
+  end
+
 
   def send_message(hash)
     s = JSON.generate(hash)
