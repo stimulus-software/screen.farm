@@ -19,10 +19,10 @@ socket.onmessage = function (event) {
     $('#info').text(message.channel);
   }
   else if (message.command == 'show') {
-    displayWindow = window.open('', 'display');
-    displayWindow.close();
-    setTimeout(function () {
+    //displayWindow = window.open('', 'display');
+    //displayWindow.close();
+    //setTimeout(function () {
       displayWindow = window.open(message.url, 'display');
-    }, 1);
+    //}, 1);
   }
 }

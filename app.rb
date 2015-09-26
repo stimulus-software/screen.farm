@@ -17,6 +17,8 @@ import 'channel_registry'
 import 'websocket_handler'
 
 $channel_registry = ChannelRegistry.new
+$files = {}
+
 
 App = lambda do |env|
   if Faye::WebSocket.websocket?(env)
