@@ -1,7 +1,9 @@
-var socket = new WebSocket("ws://localhost:9292/");
+var socket = new WebSocket("ws://" + window.location.host + "/");
 socket.onopen = function (event) {
   console.log("Sending");
 }
+
+var displayWindow = null;
 
 socket.onmessage = function (event) {
   console.log(event.data);
@@ -11,6 +13,6 @@ socket.onmessage = function (event) {
     $('#info').text("Channel " + message.channel);
   }
   else if (message.command == 'show') {
-    window.open(message.url, 'display');
+    displayWindow = window.open(message.url, 'display');
   }
 }
