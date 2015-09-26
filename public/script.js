@@ -20,9 +20,11 @@ socket.onmessage = function (event) {
   }
   else if (message.command == 'show') {
     //displayWindow = window.open('', 'display');
-    //displayWindow.close();
-    //setTimeout(function () {
+    if (displayWindow) {
+      displayWindow.close();
+    }
+    setTimeout(function () {
       displayWindow = window.open(message.url, 'display');
-    //}, 1);
+    }, 100);
   }
 }
