@@ -2,17 +2,25 @@ import 'channel'
 
 class ChannelRegistry
   def initialize
-    @counter = 0
     @collection = {}
   end
 
-  def next_id
-    @counter += 1
-    @counter.to_s
+  def generate_id
+    set = ('a'..'z').to_a
+    a = %w(a e i y o u)
+    b = set - a
+    #n = %w(n m)
+    4.times.map {
+      [
+        [a, b, a, b],
+        [b, a, b, a],
+        [b, a, a, b],
+      ].sample.map(&:sample).join
+    }.join('-')
   end
 
   def issue(ws)
-    id = next_id
+    id = generate_id
     @collection[id] = Channel.new(id, ws)
   end
 
