@@ -8,8 +8,8 @@ def get_screenshots(dir)
   Dir["#{dir}/Screen Shot *.png"]
 end
 
-def upload(filepath, host)
-  RestClient.post("http://#{host}/f", file: File.new(filepath))
+def upload(filepath, channel, host)
+  RestClient.post("http://#{host}/c/#{channel}", file: File.new(filepath))
 end
 
 current_list = get_screenshots(dir)
@@ -21,11 +21,8 @@ loop do
   if new_items.any?
     new_filepath = new_items.first
     puts "NEW: #{new_filepath}"
-    ret = upload(new_filepath, host)
-    hosted_filename = ret.strip
-
-    RestClient.post("http://#{host}/c/#{channel}", url: "http://#{host}/f/#{hosted_filename}")
-    puts ret.inspect
+    ret = upload(new_filepath, channel, host)
+    puts ret
 
     current_list = new_list
   end

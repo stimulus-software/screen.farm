@@ -10,24 +10,16 @@ class RestApi < Sinatra::Base
       status 403
       "channel_not_active #{params[:channel].inspect}\n"
     else
-      channel.show(url: params[:url])
+      url =
+        if params[:file]
+          filename = store_file(params[:file], 5*60)
+          "/f/#{filename}"
+        else
+          params[:url]
+        end
+      channel.show(url: url)
       "OK\n"
     end
-  end
-
-  post '/f' do
-    puts params.inspect
-    f = params['file']
-
-    id = rand(10**32).to_s
-
-    $files[id] = {
-      name: f[:filename],
-      type: f[:type],
-      content: f[:tempfile].read
-    }
-
-    "#{id}#{File.extname(f[:filename])}\n"
   end
 
   get '/f/:id' do
@@ -44,5 +36,19 @@ class RestApi < Sinatra::Base
 
   get '/health' do
     "OK\n"
+  end
+
+  helpers do
+    def store_file(f, ttl)
+      id = rand(10**32).to_s
+
+      $files[id] = {
+        name: f[:filename],
+        type: f[:type],
+        content: f[:tempfile].read
+      }
+
+      "#{id}#{File.extname(f[:filename])}\n"
+    end
   end
 end
