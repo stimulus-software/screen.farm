@@ -13,7 +13,11 @@ class RestApi < Sinatra::Base
       url =
         if params[:file]
           filename = store_file(params[:file], 5*60)
-          "/f/#{filename}"
+          if params[:file][:type].start_with?('image/')
+            "/i/#{filename}"
+          else
+            "/f/#{filename}"
+          end
         else
           params[:url]
         end
@@ -32,6 +36,10 @@ class RestApi < Sinatra::Base
       status 404
       "not_found"
     end
+  end
+
+  get '/i/:id' do
+    haml :image_page, locals: { file_id: params[:id] }
   end
 
   get '/health' do
