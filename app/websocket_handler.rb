@@ -40,7 +40,8 @@ class WebsocketHandler
         (pco || fid) or halt_with_error "pco and fid missing in connect"
 
         if pco
-          fid = registry.lookup_pco(pco)
+          fid = registry.lookup_pco(pco) or
+            halt_with_error "pco invalid"
           sco = registry.issue_sco(fid)
         else
           sco ||= registry.issue_sco(fid)
@@ -48,15 +49,9 @@ class WebsocketHandler
         registry.subscribe(fid, sco, sid, self)
         send_message 'connected', fid: fid, sco: sco
 
-      #when 'init'
-        #channel_id = m['channel']
-        #if channel_id && channel_id.length > 1
-          #@channel = @registry[channel_id]
-        #else
-          #@channel = @registry.issue
-        #end
-        #@channel.subscribe(self)
-        #send_message command: 'init', channel: @channel.id
+        pco = registry.issue_paircode fid
+        send_message 'paircode', pco: pco
+
       else
         halt_with_error "Unknown command: #{command}"
       end

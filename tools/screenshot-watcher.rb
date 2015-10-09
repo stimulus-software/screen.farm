@@ -1,5 +1,5 @@
 channel = ARGV[0] or raise "Please provide a channel ID"
-host = ARGV[1] || "192.168.1.69:9292"
+host = ARGV[1] or raise "Please provide a URL"
 dir = ARGV[2] || File.expand_path("~/Desktop")
 
 require 'rest_client'

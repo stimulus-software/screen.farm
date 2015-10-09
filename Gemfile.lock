@@ -22,6 +22,7 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 3.0)
       netrc (~> 0.7)
+    sass (3.4.18)
     sinatra (1.4.6)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -43,6 +44,7 @@ DEPENDENCIES
   hashie
   puma
   rest-client
+  sass
   sinatra
 
 BUNDLED WITH

@@ -18,14 +18,14 @@ class Channel
     @listeners.any?
   end
 
-  def send_message(hash)
+  def send_message(command, params)
     @listeners.each do |listener|
-      listener.send_message(hash)
+      listener.send_message(command, params)
     end
   end
 
   def show(params)
-    send_message({ command: 'show' }.merge params)
+    send_message('show', params)
   end
 end
 

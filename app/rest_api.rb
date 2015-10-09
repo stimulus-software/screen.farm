@@ -8,7 +8,7 @@ class RestApi < Sinatra::Base
   end
 
   post '/c/:channel' do
-    channel = $channel_registry[params[:channel].to_s]
+    channel = $registry[params[:channel].to_s]
     if ! channel
       status 404
       "channel_not_found #{params[:channel].inspect}\n"
@@ -50,6 +50,11 @@ class RestApi < Sinatra::Base
 
   get '/health' do
     "OK\n"
+  end
+
+  # Pair
+  get '/:pco' do
+    send_file File.join(settings.public_folder, 'index.html')
   end
 
   helpers do

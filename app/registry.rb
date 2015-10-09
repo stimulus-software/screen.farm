@@ -6,20 +6,7 @@ class Registry
     @farms = {}
     @screens = {}
     @last_sco = {}
-  end
-
-  def generate_id
-    set = ('a'..'z').to_a
-    a = %w(a e i y o u)
-    b = set - a
-    #n = %w(n m)
-    4.times.map {
-      [
-        [a, b, a, b],
-        [b, a, b, a],
-        [b, a, a, b],
-      ].sample.map(&:sample).join
-    }.join('-')
+    @paircodes = {}
   end
 
   def issue
@@ -27,6 +14,8 @@ class Registry
   end
 
   def [](id)
+    # s:<sid>
+    # f:<fid>:<sco>
     type, *rest = id.split ":"
     if type == 's'
       sid = *rest
@@ -51,6 +40,29 @@ class Registry
     @last_sco[fid].to_s
   end
 
+  def issue_paircode(fid)
+    pco = generate_paircode
+    @paircodes[pco] = fid
+    pco
+  end
+
+  def generate_paircode
+    set = ('a'..'z').to_a
+    a = %w(a e i y o u)
+    b = set - a
+    #n = %w(n m)
+    2.times.map {
+      [
+        [a, b, a, b],
+        [b, a, b, a],
+        [b, a, a, b],
+      ].sample.map(&:sample).join
+    }.join('')
+  end
+
+  def lookup_pco(pco)
+    @paircodes[pco]
+  end
 
 end
 
