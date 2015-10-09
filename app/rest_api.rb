@@ -1,6 +1,12 @@
 require 'sinatra/base'
 
 class RestApi < Sinatra::Base
+  enable :static
+
+  get "/" do
+    send_file File.join(settings.public_folder, 'index.html')
+  end
+
   post '/c/:channel' do
     channel = $channel_registry[params[:channel].to_s]
     if ! channel
