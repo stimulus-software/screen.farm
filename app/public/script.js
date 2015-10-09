@@ -37,9 +37,11 @@
     return JSON.parse(message);
   };
   connect = function(){
+    var proto;
     if (!socket || socket.readyState !== WebSocket.OPEN && !opening) {
       opening = true;
-      socket = new WebSocket("ws://" + location.host + "/");
+      proto = location.origin.indexOf('https://') === 0 && 'wss' || 'ws';
+      socket = new WebSocket(proto + "://" + location.host + "/");
       socket.onopen = function(event){
         reconnectAttempts = 0;
         opening = false;

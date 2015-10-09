@@ -32,7 +32,8 @@ parse-message = (message) -> JSON.parse(message)
 connect = ->
   if ! socket || socket.ready-state != WebSocket.OPEN && ! opening
     opening := true
-    socket := new WebSocket "ws://#{location.host}/"
+    proto = (location.origin.index-of('https://') == 0) && 'wss' || 'ws'
+    socket := new WebSocket "#{proto}://#{location.host}/"
 
     socket.onopen = (event) ->
       reconnect-attempts := 0
