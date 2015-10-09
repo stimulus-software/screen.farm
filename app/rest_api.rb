@@ -4,7 +4,7 @@ class RestApi < Sinatra::Base
   enable :static
 
   get "/" do
-    send_file File.join(settings.public_folder, 'index.html')
+    haml :index
   end
 
   post '/c/:channel' do
@@ -52,9 +52,13 @@ class RestApi < Sinatra::Base
     "OK\n"
   end
 
+  get '/style.css' do
+    sass :style
+  end
+
   # Pair
   get '/:pco' do
-    send_file File.join(settings.public_folder, 'index.html')
+    haml :index
   end
 
   helpers do

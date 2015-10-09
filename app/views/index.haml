@@ -1,0 +1,62 @@
+#nametag
+  #sco.sco.value
+  .commands
+    %a#info-btn{ href: "#info" } Show info
+    %a#add-btn{ href: "#add" } Add screen
+  #info-pane.pane.hidden
+    %div
+      Farm ID:
+      %span#fid.fid.value
+    %div
+      Screen ID:
+      %span#sid.sid.value
+  #qrcode-pane.pane.hidden
+    #qrcode
+    #url
+
+
+#logo<
+  %span.a> screen
+  %span.b> .
+  %span.c> farm
+
+#loading Loading...
+
+
+#about
+  %h2 What is this?
+  %p
+    This is a simple tool that can connect browsers on different
+    internet-connected devices, so you can push content between them.
+    You can use it, for example, to take a screenshot on your Mac and
+    have it automatically displayed on your tablet.
+    There is a REST API which allows you to push any URL or upload an image.
+  %h2 How does it work?
+  %p
+    You can add devices to your "farm" by pressing the "Add screen" button
+    above and visiting the URL or scanning the QR code.
+    Each screen will get a code which is displayed on the top.
+    To send content to a screen you can use the Rest API or any available app.
+    You will need the "Farm ID" and the "Screen Code" to the REST API or the app.
+  %h2 REST API
+  %p
+    %code<
+      curl -X POST
+      "
+      %span.root-url> https://screen.farm
+      = "/c/f:"
+      %span.fid>
+      = ":"
+      %span.sco>
+      = "\" --data url=http%3A%2F%2F9gag.com"
+  %p
+    %code<
+      curl -X POST
+      "
+      %span.root-url> https://screen.farm
+      = "/c/f:"
+      %span.fid>
+      = ":"
+      %span.sco>
+      = "\" --data file=@screenshot.png"
+

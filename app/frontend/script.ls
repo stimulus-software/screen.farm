@@ -47,20 +47,26 @@ connect = ->
         {fid, sco} = params
         local-set 'fid', fid
         local-set 'sco', sco
-        $('#info').text("f:#{fid}:#{sco} / s:#{sid}")
+        $('#loading').hide()
+        $('.root-url').text(location.origin)
+        $('.fid').text(fid)
+        $('.sid').text(sid)
+        $('.sco').text(sco)
       case 'paircode'
         {pco} = params
         url = "#{location.origin}/#{pco}"
-        $('#test').text('')
-        qrcode = new QRCode("test", {
-          width: 256
-          height: 256
+        $('#qrcode').text('')
+        $('#url').text(url)
+        width = $('#qrcode-pane').width()
+        console.log "width", width
+        qrcode = new QRCode("qrcode", {
+          width: width
+          height: width
           colorDark : '#000000'
           colorLight : '#ffffff'
           correctLevel : QRCode.CorrectLevel.H
         })
         qrcode.makeCode(url)
-        $('#url').text(url)
 
       case 'show'
         {url} = params
@@ -98,3 +104,28 @@ reconnect = ->
         wait-time
 
 connect!
+
+reset-menu = ->
+  $('.pane').hide!
+  $('#info-btn').text "Show info"
+  $('#add-btn').text "Add screen"
+
+
+$ ->
+  $('#info-btn').click ->
+    if $('#info-pane').is(':visible')
+      reset-menu!
+    else
+      reset-menu!
+      $('#info-pane').show!
+      $('#info-btn').text "Hide info"
+
+
+  $('#add-btn').click ->
+    if $('#qrcode-pane').is(':visible')
+      reset-menu!
+    else
+      reset-menu!
+      $('#qrcode-pane').show!
+      $('#add-btn').text "Hide"
+
