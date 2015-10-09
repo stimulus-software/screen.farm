@@ -1,6 +1,7 @@
 require 'faye/websocket'
 require 'json'
 require 'pathname'
+require 'hashie'
 
 APP_PATH = Pathname.new(File.dirname(__FILE__))
 $: << APP_PATH.join('app').to_s
@@ -13,16 +14,16 @@ def import(s)
   require s
 end
 
-import 'channel_registry'
-import 'websocket_handler'
+import 'registry'
 
-$channel_registry = ChannelRegistry.new
+$registry = Registry.new
 $files = {}
 
 
 App = lambda do |env|
   if Faye::WebSocket.websocket?(env)
-    WebsocketHandler.new(Faye::WebSocket.new(env), $channel_registry).run
+    import 'websocket_handler'
+    WebsocketHandler.new(Faye::WebSocket.new(env), $registry).run
   else
     # Normal HTTP request
     load 'rest_api.rb'

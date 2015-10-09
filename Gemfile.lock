@@ -9,6 +9,7 @@ GEM
       websocket-driver (>= 0.5.1)
     haml (4.0.7)
       tilt
+    hashie (3.4.2)
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     mime-types (2.6.2)
@@ -39,6 +40,7 @@ PLATFORMS
 DEPENDENCIES
   faye-websocket
   haml
+  hashie
   puma
   rest-client
   sinatra

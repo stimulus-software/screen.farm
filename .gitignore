@@ -1,2 +1,4 @@
 tmp
 .sass-cache
+npm-debug.log
+**/*.js.map
