@@ -31,7 +31,6 @@
   reconnectAttempts = 0;
   sendMessage = function(command, params){
     var message;
-    console.warn("->", JSON.stringify([command, params]));
     message = JSON.stringify([command, params]);
     console.log("SENDING", message);
     return socket.send(message);
@@ -77,7 +76,6 @@
           $('#qrcode').text('');
           $('#url').text(url);
           width = $('#qrcode-pane').width();
-          console.log("width", width);
           qrcode = new QRCode("qrcode", {
             width: width,
             height: width,
@@ -117,7 +115,6 @@
       reconnectAttempts = reconnectAttempts + 1;
       waitTimeMed = (Math.pow(2, reconnectAttempts) / 10) * 1000;
       waitTime = (Math.random() + 0.5) * waitTimeMed;
-      console.log("delay: ", waitTime, waitTimeMed);
       return reconnectTimeout = setTimeout(function(){
         reconnectTimeout = null;
         return connect();
@@ -153,7 +150,6 @@
       return updateSco();
     });
     $('#sco-input').keypress(function(ev){
-      console.log('ev', ev);
       updateSco();
       if (ev.charCode === 13 || ev.keycode === 13) {
         $('#sco-input').blur();

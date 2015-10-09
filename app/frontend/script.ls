@@ -24,7 +24,6 @@ opening = false
 reconnect-attempts = 0
 
 send-message = (command, params) ->
-  console.warn "->", JSON.stringify([command, params])
   message = JSON.stringify([command, params])
   console.log "SENDING", message
   socket.send message
@@ -63,7 +62,6 @@ connect = ->
         $('#qrcode').text('')
         $('#url').text(url)
         width = $('#qrcode-pane').width()
-        console.log "width", width
         qrcode = new QRCode("qrcode", {
           width: width
           height: width
@@ -100,7 +98,6 @@ reconnect = ->
     reconnect-attempts := reconnect-attempts + 1
     wait-time-med = (Math.pow(2, reconnect-attempts) /10) * 1000
     wait-time = (Math.random! + 0.5) * wait-time-med
-    console.log "delay: ", wait-time, wait-time-med
     reconnect-timeout :=
       setTimeout do
         ->
@@ -137,7 +134,6 @@ $ ->
 
   $('#sco-input').change -> update-sco!
   $('#sco-input').keypress (ev) ->
-    console.log 'ev', ev
     update-sco!
     if ev.charCode == 13 || ev.keycode == 13
       $('#sco-input').blur!
