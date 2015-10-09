@@ -138,19 +138,25 @@ $ ->
   $('#sco-input').change -> update-sco!
   $('#sco-input').keypress (ev) ->
     console.log 'ev', ev
+    update-sco!
     if ev.charCode == 13 || ev.keycode == 13
       $('#sco-input').blur!
+      update-sco-display!
+  $('#sco-input').blur (ev) ->
     update-sco!
+    update-sco-display!
   $('#sco-input').keyup -> update-sco!
 
 update-sco = ->
-  value = $('#sco-input').val!
-  local-set 'sco', value
-  send-message 'sco', {fid, sco: value}
+  sco := $('#sco-input').val!
+  local-set 'sco', sco
+  send-message 'sco', {fid, sco}
   resize-sco!
 
 resize-sco = ->
-  value = $('#sco-input').val!
-  char-width = Math.min(72, Math.max(24, 300 / value.length))
+  char-width = Math.min(72, Math.max(24, 300 / sco.length))
   $('#sco-input').css('font-size', char-width)
+
+update-sco-display = ->
+  $('.sco').text(sco)
 
