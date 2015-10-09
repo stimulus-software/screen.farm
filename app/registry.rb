@@ -16,13 +16,17 @@ class Registry
       sid = redis.get("farm:#{fid}:#{sco}") or
         raise "sid not found by fid & sco: #{fid}, #{sco} [id: #{id}]"
     end
-    @screens[sid] or raise "Channel not found by sid: #{sid} [id: #{id}]"
+    @screens[sid]
   end
 
   def subscribe(fid, sco, sid, listener)
     redis.setex "farm:#{fid}:#{sco}", 7*24*60*60, sid
     @screens[sid] ||= Channel.new(sid)
     @screens[sid].subscribe(listener)
+  end
+
+  def unsubscribe(fid, sco, sid, listener)
+    @screens.delete(sid)
   end
 
   def issue_sco(fid)

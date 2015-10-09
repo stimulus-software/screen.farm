@@ -1,5 +1,6 @@
 class WebsocketHandler
   attr_reader :ws, :registry
+  attr_accessor :sid, :sco, :pco, :fid
 
   def initialize(ws, registry)
     @ws = ws
@@ -18,7 +19,9 @@ class WebsocketHandler
       with_rescue do
         p [:close, event.code, event.reason]
         @ws = nil
-        @channel.unsubscribe(self) if @channel
+        if sid
+          registry.unsubscribe(fid, sco, sid, self)
+        end
       end
     end
 
@@ -33,23 +36,23 @@ class WebsocketHandler
         # [sid,pco] => lookup pco=>fid, issue sco, return [fid,sco]
         # [sid,fid] => return [fid,sco]
 
-        sid = params.sid or halt_with_error "sid missing in connect"
-        sco = params.sco
-        pco = params.pco
-        fid = params.fid
+        self.sid = params.sid or halt_with_error "sid missing in connect"
+        self.sco = params.sco
+        self.pco = params.pco
+        self.fid = params.fid
         (pco || fid) or halt_with_error "pco and fid missing in connect"
 
         if pco
-          fid = registry.lookup_pco(pco) or
+          self.fid = registry.lookup_pco(pco) or
             halt_with_error "pco invalid"
-          sco = registry.issue_sco(fid)
+          self.sco = registry.issue_sco(fid)
         else
-          sco ||= registry.issue_sco(fid)
+          self.sco ||= registry.issue_sco(fid)
         end
         registry.subscribe(fid, sco, sid, self)
         send_message 'connected', fid: fid, sco: sco
 
-        pco = registry.issue_paircode fid
+        self.pco = registry.issue_paircode fid
         send_message 'paircode', pco: pco
 
       else
