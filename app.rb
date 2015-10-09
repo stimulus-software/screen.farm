@@ -2,6 +2,7 @@ require 'faye/websocket'
 require 'json'
 require 'pathname'
 require 'hashie'
+require 'redis'
 
 APP_PATH = Pathname.new(File.dirname(__FILE__))
 $: << APP_PATH.join('app').to_s
@@ -18,6 +19,7 @@ import 'registry'
 
 $registry = Registry.new
 $files = {}
+$redis = Redis.new host: 'localhost', port: 4015
 
 
 App = lambda do |env|

@@ -2,15 +2,7 @@ import 'channel'
 
 class Registry
   def initialize
-    @collection = {}
-    @farms = {}
     @screens = {}
-    @last_sco = {}
-    @paircodes = {}
-  end
-
-  def issue
-    self[generate_id]
   end
 
   def [](id)
@@ -21,48 +13,52 @@ class Registry
       sid = *rest
     else
       fid, sco = rest
-      sid = @farms[fid][sco] or
+      sid = redis.get("farm:#{fid}:#{sco}") or
         raise "sid not found by fid & sco: #{fid}, #{sco} [id: #{id}]"
     end
     @screens[sid] or raise "Channel not found by sid: #{sid} [id: #{id}]"
   end
 
   def subscribe(fid, sco, sid, listener)
-    @farms[fid] ||= { }
-    @farms[fid][sco] = sid
+    redis.setex "farm:#{fid}:#{sco}", 7*24*60*60, sid
     @screens[sid] ||= Channel.new(sid)
     @screens[sid].subscribe(listener)
   end
 
   def issue_sco(fid)
-    @last_sco[fid] ||= 0
-    @last_sco[fid] += 1
-    @last_sco[fid].to_s
+    generate_code(1, '')
   end
 
   def issue_paircode(fid)
     pco = generate_paircode
-    @paircodes[pco] = fid
+    redis.setex "pco:#{pco}", 10*60, fid
     pco
   end
 
   def generate_paircode
+    generate_code(2, '')
+  end
+
+  def generate_code(sets = 4, delim = '-')
     set = ('a'..'z').to_a
     a = %w(a e i y o u)
     b = set - a
     #n = %w(n m)
-    2.times.map {
+    sets.times.map {
       [
         [a, b, a, b],
         [b, a, b, a],
         [b, a, a, b],
       ].sample.map(&:sample).join
-    }.join('')
+    }.join(delim)
   end
 
   def lookup_pco(pco)
-    @paircodes[pco]
+    redis.get "pco:#{pco}"
   end
 
+  def redis
+    $redis
+  end
 end
 
