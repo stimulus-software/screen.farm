@@ -30,6 +30,8 @@ App = lambda do |env|
     # Normal HTTP request
     load 'rest_api.rb'
     RestApi.new.call(env)
-  end
+  end.tap {
+    $registry.print_stats
+  }
 end
 

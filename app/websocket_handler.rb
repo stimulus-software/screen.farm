@@ -12,6 +12,7 @@ class WebsocketHandler
       with_rescue do
         m = JSON.parse(event.data)
         handle_command(*m)
+        registry.print_stats
       end
     end
 
@@ -22,6 +23,7 @@ class WebsocketHandler
         if sid
           registry.unsubscribe(fid, sco, sid, self)
         end
+        registry.print_stats
       end
     end
 

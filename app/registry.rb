@@ -64,5 +64,9 @@ class Registry
   def redis
     $redis
   end
+
+  def print_stats
+    puts "STATS: #{@screens.size} screens connected"
+  end
 end
 
