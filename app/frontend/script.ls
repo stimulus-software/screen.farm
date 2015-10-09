@@ -25,7 +25,9 @@ reconnect-attempts = 0
 
 send-message = (command, params) ->
   console.warn "->", JSON.stringify([command, params])
-  socket.send JSON.stringify([command, params])
+  message = JSON.stringify([command, params])
+  console.log "SENDING", message
+  socket.send message
 
 parse-message = (message) -> JSON.parse(message)
 
@@ -53,6 +55,8 @@ connect = ->
         $('.fid').text(fid)
         $('.sid').text(sid)
         $('.sco').text(sco)
+        $('input#sco-input').val(sco)
+        resize-sco!
       case 'paircode'
         {pco} = params
         url = "#{location.origin}/#{pco}"
@@ -129,4 +133,24 @@ $ ->
       reset-menu!
       $('#qrcode-pane').show!
       $('#add-btn').text "Hide"
+
+
+  $('#sco-input').change -> update-sco!
+  $('#sco-input').keypress (ev) ->
+    console.log 'ev', ev
+    if ev.charCode == 13 || ev.keycode == 13
+      $('#sco-input').blur!
+    update-sco!
+  $('#sco-input').keyup -> update-sco!
+
+update-sco = ->
+  value = $('#sco-input').val!
+  local-set 'sco', value
+  send-message 'sco', {fid, sco: value}
+  resize-sco!
+
+resize-sco = ->
+  value = $('#sco-input').val!
+  char-width = Math.min(72, Math.max(24, 300 / value.length))
+  $('#sco-input').css('font-size', char-width)
 

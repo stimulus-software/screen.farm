@@ -25,6 +25,10 @@ class Registry
     @screens[sid].subscribe(listener)
   end
 
+  def remove_sco(fid, sco)
+    redis.del "farm:#{fid}:#{sco}"
+  end
+
   def unsubscribe(fid, sco, sid, listener)
     @screens.delete(sid)
   end

@@ -57,6 +57,12 @@ class WebsocketHandler
         self.pco = registry.issue_paircode fid
         send_message 'paircode', pco: pco
 
+      when 'sco'
+        registry.unsubscribe(fid, sco, sid, self)
+        registry.remove_sco(fid, sco)
+        self.sco = params.sco
+        registry.subscribe(fid, sco, sid, self)
+
       else
         halt_with_error "Unknown command: #{command}"
       end
