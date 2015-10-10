@@ -42,6 +42,10 @@ class RestApi < Sinatra::Base
     sass :style
   end
 
+  get '/t/icon' do
+    haml :icon
+  end
+
   # Pair
   get '/:pco' do
     haml :index
