@@ -57,6 +57,8 @@ connect = ->
         $('.sco').text(sco)
         $('input#sco-input').val(sco)
         resize-sco!
+        if location.pathname != "/"
+          history.replace-state {}, "", location.origin
       case 'paircode'
         {pco} = params
         url = "#{location.origin}/#{pco}"

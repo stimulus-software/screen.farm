@@ -70,7 +70,11 @@
           $('.sid').text(sid);
           $('.sco').text(sco);
           $('input#sco-input').val(sco);
-          return resizeSco();
+          resizeSco();
+          if (location.pathname !== "/") {
+            return history.replaceState({}, "", location.origin);
+          }
+          break;
         case 'paircode':
           pco = params.pco;
           url = location.origin + "/" + pco;
