@@ -32,14 +32,13 @@ class Registry
   end
 
   def unsubscribe(fid, sco, sid, listener)
+    remove_sco(fid, sco)
     @screens.delete(sid)
   end
 
   def channels_in_farm(fid)
     redis.smembers("farm:#{fid}:scos").map do |sco|
-      puts "MEMBER: #{sco}"
       sid = redis.get("farm:#{fid}:sco:#{sco}:sid")
-      puts "SID: #{sid}"
       if sid && (channel = @screens[sid])
         Hashie::Mash.new(
           sco: sco,
