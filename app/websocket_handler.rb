@@ -23,6 +23,7 @@ class WebsocketHandler
         if sid
           registry.unsubscribe(fid, sco, sid, self)
         end
+        publish_state
         registry.print_stats
       end
     end
@@ -57,11 +58,14 @@ class WebsocketHandler
         self.pco = registry.issue_paircode fid
         send_message 'paircode', pco: pco
 
+        publish_state
+
       when 'sco'
         registry.unsubscribe(fid, sco, sid, self)
         registry.remove_sco(fid, sco)
         self.sco = params.sco
         registry.subscribe(fid, sco, sid, self)
+        publish_state
 
       else
         halt_with_error "Unknown command: #{command}"
@@ -76,7 +80,19 @@ class WebsocketHandler
 
   def send_message(command, params)
     s = JSON.generate([command, params])
+    puts "ws.send #{s}"
     ws.send(s)
+  end
+
+  def publish_state
+    channel_info_list = registry.channels_in_farm(fid)
+    state = channel_info_list.map { |channel_info|
+      { sco: channel_info.sco, sid: channel_info.sid }
+    }
+    channel_info_list.each do |channel_info|
+      puts "send message to #{channel_info.sco}"
+      channel_info.channel.send_message('state', state: state)
+    end
   end
 
 

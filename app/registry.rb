@@ -13,24 +13,41 @@ class Registry
       sid = *rest
     else
       fid, sco = rest
-      sid = redis.get("farm:#{fid}:#{sco}") or
+      sid = redis.get("farm:#{fid}:sco:#{sco}:sid") or
         raise "sid not found by fid & sco: #{fid}, #{sco} [id: #{id}]"
     end
     @screens[sid]
   end
 
   def subscribe(fid, sco, sid, listener)
-    redis.setex "farm:#{fid}:#{sco}", 7*24*60*60, sid
+    redis.sadd "farm:#{fid}:scos", sco
+    redis.setex "farm:#{fid}:sco:#{sco}:sid", 7*24*60*60, sid
     @screens[sid] ||= Channel.new(sid)
     @screens[sid].subscribe(listener)
   end
 
   def remove_sco(fid, sco)
-    redis.del "farm:#{fid}:#{sco}"
+    redis.srem "farm:#{fid}:scos", sco
+    redis.del "farm:#{fid}:sco:#{sco}:sid"
   end
 
   def unsubscribe(fid, sco, sid, listener)
     @screens.delete(sid)
+  end
+
+  def channels_in_farm(fid)
+    redis.smembers("farm:#{fid}:scos").map do |sco|
+      puts "MEMBER: #{sco}"
+      sid = redis.get("farm:#{fid}:sco:#{sco}:sid")
+      puts "SID: #{sid}"
+      if sid && (channel = @screens[sid])
+        Hashie::Mash.new(
+          sco: sco,
+          sid: sid,
+          channel: channel
+        )
+      end
+    end.compact
   end
 
   def issue_sco(fid)

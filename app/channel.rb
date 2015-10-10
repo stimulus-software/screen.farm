@@ -20,6 +20,7 @@ class Channel
 
   def send_message(command, params)
     @listeners.each do |listener|
+      puts "send message to listener"
       listener.send_message(command, params)
     end
   end

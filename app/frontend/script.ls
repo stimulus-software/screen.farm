@@ -42,11 +42,12 @@ connect = ->
       send-message "connect", {sid, fid, sco, pco}
 
     socket.onmessage = (event) ->
+      console.log "fid", fid
       console.log "RECEIVED", event.data
       [command, params] = parse-message event.data
       switch command
       case 'connected'
-        {fid, sco} = params
+        {fid, sco} := params
         local-set 'fid', fid
         local-set 'sco', sco
         $('#loading').hide()
@@ -77,6 +78,35 @@ connect = ->
         set-timeout do
           -> display-window := window.open url, 'screen_farm_display'
           100
+
+      case 'state'
+        {state} = params
+
+        elem-ids = []
+        for item in state
+          make-bookmarklet = (sco) ->
+            "javascript:(function(){var v = window.open('#{location.origin}/b/f:#{fid}:#{sco}?url='+encodeURIComponent(location.href))})();"
+
+          elem-id = "s-#{item.sid}"
+          elem-ids.push(elem-id)
+          if ($elem = $('#screens').find('#'+elem-id)).length
+            # Update existing ones
+            $blet = $elem.find('a.bookmarklet')
+            if $blet.text! != item.sco
+              $blet.text(item.sco)
+              $blet.attr('href', make-bookmarklet(item.sco))
+          else
+            # Add new ones
+            $('#screens').append do
+              $('<div>').add-class('screen').attr('id', elem-id).append do
+                $('<a>').add-class('bookmarklet')
+                  .text(item.sco)
+                  .attr('href', make-bookmarklet(item.sco))
+
+        # Remove ones that are not present in the state
+        $('#screens .screen').map ->
+          if elem-ids.index-of(@id) == -1
+            $(@).remove!
 
       case 'error'
         {msg} = params

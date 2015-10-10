@@ -55,7 +55,8 @@
         });
       };
       socket.onmessage = function(event){
-        var ref$, command, params, fid, sco, pco, url, width, qrcode, msg;
+        var ref$, command, params, pco, url, width, qrcode, state, elemIds, i$, len$, item, makeBookmarklet, elemId, $elem, $blet, msg;
+        console.log("fid", fid);
         console.log("RECEIVED", event.data);
         ref$ = parseMessage(event.data), command = ref$[0], params = ref$[1];
         switch (command) {
@@ -92,11 +93,37 @@
           return setTimeout(function(){
             return displayWindow = window.open(url, 'screen_farm_display');
           }, 100);
+        case 'state':
+          state = params.state;
+          elemIds = [];
+          for (i$ = 0, len$ = state.length; i$ < len$; ++i$) {
+            item = state[i$];
+            makeBookmarklet = fn$;
+            elemId = "s-" + item.sid;
+            elemIds.push(elemId);
+            if (($elem = $('#screens').find('#' + elemId)).length) {
+              $blet = $elem.find('a.bookmarklet');
+              if ($blet.text() !== item.sco) {
+                $blet.text(item.sco);
+                $blet.attr('href', makeBookmarklet(item.sco));
+              }
+            } else {
+              $('#screens').append($('<div>').addClass('screen').attr('id', elemId).append($('<a>').addClass('bookmarklet').text(item.sco).attr('href', makeBookmarklet(item.sco))));
+            }
+          }
+          return $('#screens .screen').map(function(){
+            if (elemIds.indexOf(this.id) === -1) {
+              return $(this).remove();
+            }
+          });
         case 'error':
           msg = params.msg;
           return console.error("Backend says:", msg);
         default:
           throw "Unknown command: " + command;
+        }
+        function fn$(sco){
+          return "javascript:(function(){var v = window.open('" + location.origin + "/b/f:" + fid + ":" + sco + "?url='+encodeURIComponent(location.href))})();";
         }
       };
       socket.onclose = function(event){
