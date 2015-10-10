@@ -8,28 +8,14 @@ class RestApi < Sinatra::Base
   end
 
   post '/c/:channel' do
-    channel = $registry[params[:channel].to_s]
-    if ! channel
-      status 404
-      "channel_not_found #{params[:channel].inspect}\n"
-    elsif ! channel.active?
-      status 403
-      "channel_not_active #{params[:channel].inspect}\n"
-    else
-      url =
-        if params[:file]
-          filename = store_file(params[:file], 5*60)
-          if params[:file][:type].start_with?('image/')
-            "/i/#{filename}"
-          else
-            "/f/#{filename}"
-          end
-        else
-          params[:url]
-        end
-      channel.show(url: url)
-      "OK\n"
-    end
+    post_to_channel(params[:channel], url: params[:url], file: params[:file])
+  end
+
+  get '/b/:channel' do
+    post_to_channel params[:channel], url: params[:url],
+      success: -> {
+        haml :bookmarklet_success
+      }
   end
 
   get '/f/:id' do
@@ -72,6 +58,35 @@ class RestApi < Sinatra::Base
       }
 
       "#{id}#{File.extname(f[:filename])}\n"
+    end
+
+    def post_to_channel(ch, params)
+      channel = $registry[ch.to_s]
+      if ! channel
+        status 404
+        "channel_not_found #{ch.inspect}\n"
+      elsif ! channel.active?
+        status 403
+        "channel_not_active #{ch.inspect}\n"
+      else
+        url =
+          if params[:file]
+            filename = store_file(params[:file], 5*60)
+            if params[:file][:type].start_with?('image/')
+              "/i/#{filename}"
+            else
+              "/f/#{filename}"
+            end
+          else
+            params[:url]
+          end
+        channel.show(url: url)
+        if params[:success]
+          params[:success].call
+        else
+          "OK\n"
+        end
+      end
     end
   end
 end
