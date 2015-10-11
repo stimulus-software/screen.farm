@@ -9,6 +9,7 @@ with minimal setup.
 
 ## Quick start
 
+1.  Go to [https://screen.farm](https://screen.farm)
 1.  Add your device to your "farm" by scanning the QR code or entering the URL on that device
 2.  Your device will get a random name displayed in large letters, you can edit this
 3.  A small tag will appear at the bottom for each connected screen, this is a bookmarklet, drag this to your bookmark bar
@@ -33,6 +34,26 @@ Using the REST API you can write any tool you can think of, some ideas:
 
 This project is in its initial dirty hack phase. Expect ugly code,
 ridiculous bugs and security issues.
+
+## Running your own
+
+Install Ruby 2.0+ (tested with 2.2.3p173).
+
+Install dependencies:
+
+    bundle install
+
+Start redis:
+
+    redis-server --port 4015
+
+Start the server:
+
+   ./bin/run
+
+During development, run this to compile LiveScript into JavaScript:
+
+    lsc -wco app/public -m linked app/frontend
 
 ## License
 
